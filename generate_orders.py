@@ -3,7 +3,7 @@
 import pandas as pd
 import os
 import logging
-from db import db_connection  # <-- ვიყენებთ თქვენს არსებულ, უსაფრთხო კავშირს!
+from db import db_connection  
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -44,10 +44,8 @@ def fetch_and_save_orders_data():
     """
     
     try:
-        # --- ცვლილება: ვიყენებთ პირდაპირ იმპორტირებულ კავშირს ---
         logging.info("Using existing database connection to execute query...")
         
-        # ვიყენებთ pandas-ის read_sql-ს, რომელიც პირდაპირ DataFrame-ს ქმნის
         df_orders = pd.read_sql(sql_query, db_connection)
         
         if df_orders.empty:
@@ -64,8 +62,7 @@ def fetch_and_save_orders_data():
 
     except Exception as e:
         logging.error(f"An error occurred: {e}")
-    # finally ბლოკი აღარ არის საჭირო, რადგან კავშირს db.py მართავს
 
 if __name__ == "__main__":
-    # load_dotenv() აღარ არის საჭირო, რადგან საიდუმლოებები db.py-შია
+
     fetch_and_save_orders_data()
