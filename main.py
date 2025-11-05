@@ -59,7 +59,6 @@ def main():
 
     # --- 3. Run Forecasting in Parallel ---
     print(f"Step 3/5: Running forecast for {len(forecast_args)} products...")
-    # Use 'spawn' context for better cross-platform compatibility
     with get_context("spawn").Pool(processes=max(1, cpu_count() - 1)) as pool:
         forecast_results = list(tqdm(pool.imap(forecast_one, forecast_args), total=len(forecast_args), desc="Forecasting"))
 
@@ -69,9 +68,6 @@ def main():
     # --- 4. Calculate KPIs and Finalize ---
     print("Step 4/5: Calculating final KPIs...")
     final_df = calculate_kpis(df_raw, forecast_df, additional_data)
-    
-    # --- (Optional) Run Optimization ---
-    # final_df = run_optimal_allocation(final_df)
 
     # --- 5. Save Results ---
     print("Step 5/5: Saving results...")
@@ -80,7 +76,6 @@ def main():
     
     output_path = os.path.join(config.OUTPUT_FOLDER, config.FINAL_KPI_FILENAME)
     
-    # Format barcode for Excel to prevent scientific notation
     final_df['barcode'] = "'" + final_df['barcode'].astype(str)
     final_df.to_csv(output_path, index=False, encoding='utf-8-sig')
 
@@ -89,21 +84,7 @@ def main():
     save_results_to_db(final_df, 'veli_prophet_results')
     print(f"✅ Process finished successfully!")
 
-    # --- (Optional) Run Evaluation on a sample of products ---
-    # print("\n🔬 Starting optional evaluation process...")
-    # sample_barcodes = forecast_args[:10] # Evaluate first 10 products
-    # all_metrics = []
-    # for args in tqdm(sample_barcodes, desc="Evaluating Models"):
-    #     barcode, group_df, holidays_df, _ = args
-    #     metrics = evaluate_model_accuracy(barcode, group_df, holidays_df)
-    #     if metrics is not None:
-    #         all_metrics.append(metrics)
-    #
-    # if all_metrics:
-    #     evaluation_df = pd.concat(all_metrics, ignore_index=True)
-    #     eval_path = os.path.join(config.OUTPUT_FOLDER, config.EVALUATION_FILENAME)
-    #     evaluation_df.to_csv(eval_path, index=False)
-    #     print(f"✅ Evaluation metrics saved to {eval_path}")
 
 if __name__ == "__main__":
+
     main()
