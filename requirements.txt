@@ -1,0 +1,16 @@
+
+# Core Data & Forecasting
+pandas
+prophet
+cmdstanpy
+pulp # For optimization
+numpy
+scipy # Prophet dependency
+
+# Database
+psycopg2-binary
+SQLAlchemy
+
+# Utilities
+python-dotenv
+tqdm # For progress bars
