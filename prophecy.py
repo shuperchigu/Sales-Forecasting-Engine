@@ -132,7 +132,6 @@ def calculate_kpis(df_raw: pd.DataFrame, forecast_df: pd.DataFrame, additional_d
                       if col in additional_data.columns]
         result = result.merge(additional_data[merge_cols], on='barcode', how='left')
     
-    # --- ახალი ველების გამოთვლა ---
     # ვავსებთ ცარიელ მნიშვნელობებს, რათა თავიდან ავიცილოთ შეცდომები
     for col in ['items_sold_3m', 'price', 'cost', 'in_stock', 'forecastedADD']:
         if col in result.columns:
@@ -143,27 +142,25 @@ def calculate_kpis(df_raw: pd.DataFrame, forecast_df: pd.DataFrame, additional_d
     result['COGS_last_3m'] = result['items_sold_3m'] * result['cost']
     
     # 2. შესაძენი რაოდენობის ღირებულება
-    # ფორმულა: (პროგნოზირებული მოთხოვნა 30 დღეზე * ფასი) - (მარაგის ღირებულება)
     result['purchase_recommendation_cost'] = (result['forecastedADD'] * 30 * result['cost']) - (result['in_stock'] * result['cost'])
     
     # პირობა: თუ 0-ზე ნაკლებია, გახდეს 0
     result['purchase_recommendation_cost'] = result['purchase_recommendation_cost'].clip(lower=0)
     
-    # --- საბოლოო ველების სია ---
-    # ვცვლით 'items_sold_3m'-ის სახელს უფრო გასაგებით
     result.rename(columns={'items_sold_3m': 'items_sold_last_3m'}, inplace=True)
     
     final_cols = [
         'barcode', 'product_name', 'mother_cat_name', 'subcategory', 'supplier_name', 'brand', 
         'in_stock', 'cost', 'price', 'DSI', 'GMROI', 
         'forecastedADD', 'median_add_3m',
-        'items_sold_last_3m', 'revenue_last_3m', 'COGS_last_3m', # <-- ახალი ბიზნეს ველები
-        'purchase_recommendation_cost' # <-- ახალი სარეკომენდაციო ველი
+        'items_sold_last_3m', 'revenue_last_3m', 'COGS_last_3m',
+        'purchase_recommendation_cost' 
     ]
     
     # დარწმუნდით, რომ ყველა სვეტი არსებობს DataFrame-ში
     for col in final_cols:
         if col not in result.columns:
             result[col] = 0.0
+
 
     return result[final_cols].copy()
