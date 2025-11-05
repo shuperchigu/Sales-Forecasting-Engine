@@ -40,7 +40,7 @@ def fetch_and_save_orders_data():
            cashback_campaign_name,
            round(voucher_cashback::numeric, 2) as voucher_cashback,
            round(promotion_cashback::numeric, 2) as promotion_cashback
-    from veli_orders
+    from table_of_orders
     """
     
     try:
@@ -66,3 +66,4 @@ def fetch_and_save_orders_data():
 if __name__ == "__main__":
 
     fetch_and_save_orders_data()
+
